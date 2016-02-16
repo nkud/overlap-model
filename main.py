@@ -93,7 +93,8 @@ if __name__ == "__main__":
 
     agents[0].infect()
 
-    for i in range( 10 ):
+    fo = file('out.txt', 'w')
+    for i in range( 30 ):
 
         # move
         for a in agents:
@@ -102,10 +103,9 @@ if __name__ == "__main__":
         # infect
         for a in agents:
             if a.isInfection():
-                a_neighbors = a.neighbors()
-                if len(a_neighbors) > 0:
-                    print a_neighbors
-
+                for s in a.neighbors():
+                    for ii in s:
+                        ii.infect()
 
         for a in agents:
             a.proceed()
@@ -115,3 +115,5 @@ if __name__ == "__main__":
         for a in agents:
             if a.isInfection(): infection_size += 1
         print infection_size
+
+        fo.write('%d %d\n' % (i, infection_size))
