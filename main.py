@@ -3,10 +3,10 @@
 
 import random
 
-HEIGHT = 20
-WIDTH = 20
+HEIGHT = 50
+WIDTH = 50
 
-AGENTSIZE = 100
+AGENTSIZE = 1000
 
 PROB_INFECTION = 10
 
@@ -35,6 +35,10 @@ def bool():
 def sign():
     if bool(): return -1
     else: return 1
+
+def probability( prob ):
+    if uniform(0, 100) < prob: return True
+    else: return False
 
 class agent(object):
     def __init__(self):
@@ -65,11 +69,13 @@ class agent(object):
                 if isOnMap(jx,iy) == False: continue
                 for a in map[iy][jx]:
                     if a == self: continue
-                    ret.append(map[iy][jx])
+                    ret.append(a)
         return ret
 
     def isInfection(self):
         return self.is_infection
+    def hasImmunity(self):
+        return self.has_immunity
 
     def infect(self):
         if self.has_immunity == True: return
@@ -78,7 +84,7 @@ class agent(object):
     def proceed(self):
         if self.isInfection():
             self.infection_term += 1
-        if self.infection_term > 5:
+        if self.infection_term > 20:
             self.has_immunity = True
             self.is_infection = False
 
@@ -91,10 +97,12 @@ if __name__ == "__main__":
     for a in agents:
         map[a.y][a.x].append(a)
 
+    # initiate infection
     agents[0].infect()
 
-    fo = file('out.txt', 'w')
-    for i in range( 30 ):
+    foinfection = file('infection.txt', 'w')
+    foimmunity = file('immunity.txt', 'w')
+    for i in range( 100 ):
 
         # move
         for a in agents:
@@ -103,17 +111,20 @@ if __name__ == "__main__":
         # infect
         for a in agents:
             if a.isInfection():
-                for s in a.neighbors():
-                    for ii in s:
-                        ii.infect()
+                for n in a.neighbors():
+                    if probability( PROB_INFECTION ):
+                        n.infect()
 
         for a in agents:
             a.proceed()
 
         # output
         infection_size = 0
+        immunity_size = 0
         for a in agents:
             if a.isInfection(): infection_size += 1
-        print infection_size
+            if a.hasImmunity(): immunity_size += 1
+        print i, infection_size
 
-        fo.write('%d %d\n' % (i, infection_size))
+        foinfection.write('%d %d\n' % (i, infection_size))
+        foimmunity.write('%d %d\n' % (i, immunity_size))
