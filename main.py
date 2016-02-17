@@ -3,12 +3,12 @@
 
 import random
 
-HEIGHT = 20
-WIDTH = 20
+HEIGHT = 50
+WIDTH = 50
 
-AGENTSIZE = 200
+AGENTSIZE = 1000
 
-PROB_INFECTION = 5
+PROB_INFECTION = 1
 
 OVERLAP = 5
 
@@ -17,8 +17,8 @@ map = [[[] for i in range(HEIGHT*2-OVERLAP+1)] for j in range(WIDTH*2-OVERLAP+1)
 def isOnMap(x, y):
     if x < 0: return False
     if y < 0: return False
-    if x >= WIDTH: return False
-    if y >= HEIGHT: return False
+    if x >= WIDTH*2-OVERLAP+1: return False
+    if y >= HEIGHT*2-OVERLAP+1: return False
     return True
 
 def uniform(a, b):
@@ -109,7 +109,7 @@ class agent(object):
     def proceed(self):
         if self.isInfection():
             self.infection_term += 1
-        if self.infection_term > 100:
+        if self.infection_term > 50:
             self.has_immunity = True
             self.is_infection = False
 
@@ -120,11 +120,11 @@ if __name__ == "__main__":
     for i in range(AGENTSIZE):
         agents.append( agent(0, 0) )
     for i in range(AGENTSIZE):
-        agents.append( agent(0, 15) )
+        agents.append( agent(0, 45) )
     for i in range(AGENTSIZE):
-        agents.append( agent(15, 15) )
+        agents.append( agent(45, 45) )
     for i in range(AGENTSIZE):
-        agents.append( agent(15, 0) )
+        agents.append( agent(45, 0) )
 
     for a in agents:
         map[a.y][a.x].append(a)
@@ -158,10 +158,11 @@ if __name__ == "__main__":
         for a in agents:
             if a.isInfection(): infection_size += 1
             if a.hasImmunity(): immunity_size += 1
-        print step, infection_size
 
         foinfection.write('%d %d\n' % (step, infection_size))
         foimmunity.write('%d %d\n' % (step, immunity_size))
+
+        print step, infection_size, immunity_size
 
         if infection_size == 0:
             break;
