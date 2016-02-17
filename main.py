@@ -8,7 +8,7 @@ WIDTH = 50
 
 AGENTSIZE = 1000
 
-PROB_INFECTION = 1
+PROB_INFECTION = 10
 
 OVERLAP = 5
 
@@ -130,7 +130,15 @@ if __name__ == "__main__":
         map[a.y][a.x].append(a)
 
     # initiate infection
-    agents[0].infect()
+    initiate = False
+    for iy in range(HEIGHT):
+        if initiate == True: break
+        for jx in range(WIDTH):
+            a = map[iy][jx]
+            if len(a) > 0:
+                a[0].infect()
+                initiate = True
+                break
 
     foinfection = file('infection.txt', 'w')
     foimmunity = file('immunity.txt', 'w')
