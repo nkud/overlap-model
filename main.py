@@ -3,19 +3,19 @@
 
 import random
 
-HEIGHT = 50
-WIDTH = 50
+HEIGHT = 30
+WIDTH = 30
 
-OVERLAP = 5
+OVERLAP = 2
 
 ALLWIDTH = WIDTH*2-OVERLAP
 ALLHEIGHT = HEIGHT*2-OVERLAP
 
-AGENTSIZE = 1000
+AGENTSIZE = 100
 
-PROB_INFECTION = 50
+PROB_INFECTION = 80
 
-INFECTION_TERM = 5
+INFECTION_TERM = 50
 
 map = [[[] for i in range(ALLHEIGHT+1)] for j in range(ALLWIDTH+1)]
 
@@ -85,10 +85,14 @@ class agent(object):
         if bool(): desty += sign()
 
         if self.isInRegion(destx, desty):
-            map[self.y][self.x].remove(self)
-            self.x = destx
-            self.y = desty
-            map[self.y][self.x].append(self)
+            self.setPoint(destx, desty)
+
+    def setPoint(self, x, y):
+        map[self.y][self.x].remove(self)
+        self.x = x
+        self.y = y
+        map[self.y][self.x].append(self)
+
 
     def randomset(self):
         self.x = randint(0, WIDTH-1)
