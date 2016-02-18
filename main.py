@@ -8,20 +8,22 @@ WIDTH = 50
 
 OVERLAP = 5
 
-ALLWIDTH = WIDTH*2-OVERLAP+1 
-ALLHEIGHT = HEIGHT*2-OVERLAP+1 
+ALLWIDTH = WIDTH*2-OVERLAP
+ALLHEIGHT = HEIGHT*2-OVERLAP
 
 AGENTSIZE = 1000
 
-PROB_INFECTION = 10
+PROB_INFECTION = 50
 
-map = [[[] for i in range(HEIGHT*2-OVERLAP+1)] for j in range(WIDTH*2-OVERLAP+1)]
+INFECTION_TERM = 5
+
+map = [[[] for i in range(ALLHEIGHT+1)] for j in range(ALLWIDTH+1)]
 
 def isOnMap(x, y):
     if x < 0: return False
     if y < 0: return False
-    if x >= WIDTH*2-OVERLAP+1: return False
-    if y >= HEIGHT*2-OVERLAP+1: return False
+    if x > ALLWIDTH: return False
+    if y > ALLHEIGHT: return False
     return True
 
 def uniform(a, b):
@@ -42,7 +44,8 @@ def sign():
     else: return 1
 
 def probability( prob ):
-    if uniform(0, 100) < prob: return True
+    if prob == 0: return False
+    if uniform(0, 100) <= prob: return True
     else: return False
 
 
@@ -61,17 +64,19 @@ class agent(object):
         self.originy = originy
 
         self.randomset()
+
     def isInRegion(self, x, y):
-        if self.x < self.originx: return False
-        if self.y < self.originy: return False
-        if self.x >= WIDTH+self.originx: return False
-        if self.y >= HEIGHT+self.originy: return False
+        if x < self.originx: return False
+        if y < self.originy: return False
+        if x > WIDTH+self.originx: return False
+        if y > HEIGHT+self.originy: return False
         return True
 
     def gainX( self, dis ):
         self.x += dis
     def gainY( self, dis ):
         self.y += dis
+
     def move(self):
         destx = self.x
         desty = self.y
@@ -112,7 +117,7 @@ class agent(object):
     def proceed(self):
         if self.isInfection():
             self.infection_term += 1
-        if self.infection_term > 50:
+        if self.infection_term > INFECTION_TERM:
             self.has_immunity = True
             self.is_infection = False
 
@@ -123,11 +128,11 @@ if __name__ == "__main__":
     for i in range(AGENTSIZE):
         agents.append( agent(0, 0) )
     for i in range(AGENTSIZE):
-        agents.append( agent(0, 45) )
+        agents.append( agent(0, HEIGHT-OVERLAP) )
     for i in range(AGENTSIZE):
-        agents.append( agent(45, 45) )
+        agents.append( agent(WIDTH-OVERLAP, HEIGHT-OVERLAP) )
     for i in range(AGENTSIZE):
-        agents.append( agent(45, 0) )
+        agents.append( agent(WIDTH-OVERLAP, 0) )
 
     for a in agents:
         map[a.y][a.x].append(a)
@@ -179,6 +184,15 @@ if __name__ == "__main__":
         for y in range(ALLHEIGHT):
             for x in range(ALLWIDTH):
                 fomap.write('%d %d %d\n'%(x, y, len(map[y][x])))
+            fomap.write('\n')
+
+        fomap = file('infection-map-%d.txt'%step, 'w')
+        for y in range(ALLHEIGHT):
+            for x in range(ALLWIDTH):
+                infsize = 0
+                for a in map[y][x]:
+                    if a.isInfection(): infsize += 1
+                fomap.write('%d %d %d\n'%(x, y, infsize))
             fomap.write('\n')
 
 
