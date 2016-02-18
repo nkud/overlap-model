@@ -6,11 +6,14 @@ import random
 HEIGHT = 50
 WIDTH = 50
 
+OVERLAP = 5
+
+ALLWIDTH = WIDTH*2-OVERLAP+1 
+ALLHEIGHT = HEIGHT*2-OVERLAP+1 
+
 AGENTSIZE = 1000
 
 PROB_INFECTION = 10
-
-OVERLAP = 5
 
 map = [[[] for i in range(HEIGHT*2-OVERLAP+1)] for j in range(WIDTH*2-OVERLAP+1)]
 
@@ -142,6 +145,7 @@ if __name__ == "__main__":
 
     foinfection = file('infection.txt', 'w')
     foimmunity = file('immunity.txt', 'w')
+    fosusceptible = file('susceptible.txt', 'w')
 
     step = 0
     while(True):
@@ -169,6 +173,14 @@ if __name__ == "__main__":
 
         foinfection.write('%d %d\n' % (step, infection_size))
         foimmunity.write('%d %d\n' % (step, immunity_size))
+        fosusceptible.write('%d %d\n' % (step, len(agents)-infection_size-immunity_size))
+
+        fomap = file('map-%d.txt'%step, 'w')
+        for y in range(ALLHEIGHT):
+            for x in range(ALLWIDTH):
+                fomap.write('%d %d %d\n'%(x, y, len(map[y][x])))
+            fomap.write('\n')
+
 
         print step, infection_size, immunity_size
 
