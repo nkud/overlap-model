@@ -2,20 +2,22 @@
 # -*- coding: utf-8 -*-
 
 import random
+import os
+import shutil
 
 HEIGHT = 30
 WIDTH = 30
 
-OVERLAP = 2
+OVERLAP = 5
 
 ALLWIDTH = WIDTH*2-OVERLAP
 ALLHEIGHT = HEIGHT*2-OVERLAP
 
-AGENTSIZE = 100
+AGENTSIZE = 200
 
 PROB_INFECTION = 80
 
-INFECTION_TERM = 50
+INFECTION_TERM = 10
 
 map = [[[] for i in range(ALLHEIGHT+1)] for j in range(ALLWIDTH+1)]
 
@@ -152,9 +154,12 @@ if __name__ == "__main__":
                 initiate = True
                 break
 
-    foinfection = file('infection.txt', 'w')
-    foimmunity = file('immunity.txt', 'w')
-    fosusceptible = file('susceptible.txt', 'w')
+    if os.path.exists('data'):
+        shutil.rmtree('data')
+    os.mkdir('data')
+    foinfection = file('data/infection.txt', 'w')
+    foimmunity = file('data/immunity.txt', 'w')
+    fosusceptible = file('data/susceptible.txt', 'w')
 
     step = 0
     while(True):
@@ -184,13 +189,13 @@ if __name__ == "__main__":
         foimmunity.write('%d %d\n' % (step, immunity_size))
         fosusceptible.write('%d %d\n' % (step, len(agents)-infection_size-immunity_size))
 
-        fomap = file('map-%d.txt'%step, 'w')
+        fomap = file('data/map-%d.txt'%step, 'w')
         for y in range(ALLHEIGHT):
             for x in range(ALLWIDTH):
                 fomap.write('%d %d %d\n'%(x, y, len(map[y][x])))
             fomap.write('\n')
 
-        fomap = file('infection-map-%d.txt'%step, 'w')
+        fomap = file('data/infection-map-%d.txt'%step, 'w')
         for y in range(ALLHEIGHT):
             for x in range(ALLWIDTH):
                 infsize = 0
